@@ -32,6 +32,7 @@ userRouter.post("/signup", async (c) => {
       data: {
         email: body.email,
         password: body.password,
+        name: body.name,
       },
     });
 
@@ -54,7 +55,7 @@ userRouter.post("/signup", async (c) => {
 });
 
 userRouter.post("/signin", async (c) => {
-  const body = c.req.json();
+  const body = await c.req.json();
 
   const { success } = signinInput.safeParse(body);
 
@@ -69,9 +70,10 @@ userRouter.post("/signin", async (c) => {
     datasourceUrl: c.env?.DATABASE_URL,
   }).$extends(withAccelerate());
 
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findFirst({
     where: {
       email: body.email,
+      password: body.password,
     },
   });
 
